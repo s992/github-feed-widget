@@ -7,8 +7,7 @@
 		</a>
 		<ul class="feed" >
 			<cfset myJSON = new GitHubJSONParser( 'https://github.com/s992.json' ).getCleanJSON() />
-			<cfloop collection="#myJSON#" item="i" >
-				<cfif myJSON[i].event NEQ 'missing'>
+			<cfloop from="1" to="#arrayLen(myJSON)#" index="i">
 				<li class="feedItem #myJSON[i].event#" >
 					<a href="#myJSON[i].url#" class="updateLink" >
 						...
@@ -26,15 +25,14 @@
 								</cfloop>
 							</ul>
 						<cfelse>
-							#myJSON[i].description#
-						</cfif>
-					</p>
-					<div class="lastUpdated" >
-						#myJSON[i].date#
-					</div>
-				</li>
-				</cfif>
-			</cfloop>
+						#myJSON[i].description#
+					</cfif>
+				</p>
+				<div class="lastUpdated" >
+					#myJSON[i].date#
+				</div>
+			</li>
+		</cfloop>
 		</ul>
 	</div>
 </cfoutput>

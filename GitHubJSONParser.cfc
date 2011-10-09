@@ -20,7 +20,7 @@
 		return this;
 	}
 	
-	public struct function getCleanJSON() {
+	public array function getCleanJSON() {
 		setDirtyJSON( makeHttpRequestAndReturnJSON() );
 		return makeCleanJSON();
 	}
@@ -38,8 +38,8 @@
 		return json;
 	}
 	
-	private struct function makeCleanJSON() {
-		var rStruct = structNew();
+	private array function makeCleanJSON() {
+		var rArray = arrayNew( 1 );
 		//Don't worry about this, I just went overboard with getters and setters
 		var json = getDirtyJSON();
 		var i = 1;
@@ -54,23 +54,23 @@
 			switch(json[i].type) {
 				//Depending on the event, we'll call the correct method and pass it the item in question
 				case "PushEvent":
-					structInsert( rStruct, actualCount, handlePushEvent( json[i] ) );
+					rArray[ actualCount ] = handlePushEvent( json[i] );
 					actualCount++;
 					break;
 				case "WatchEvent":
-					structInsert( rStruct, actualCount, handleWatchEvent( json[i] ) );
+					rArray[ actualCount ] = handleWatchEvent( json[i] );
 					actualCount++;
 					break;
 				case "CreateEvent":
-					structInsert( rStruct, actualCount, handleCreateEvent( json[i] ) );
+					rArray[ actualCount ] = handleCreateEvent( json[i] );
 					actualCount++;
 					break;
 				case "ForkEvent":
-					structInsert( rStruct, actualCount, handleForkEvent( json[i] ) );
+					rArray[ actualCount ] = handleForkEvent( json[i] );
 					actualCount++;
 					break;
 				case "FollowEvent":
-					structInsert( rStruct, actualCount, handleFollowEvent( json[i] ) );
+					rArray[ actualCount ] = handleFollowEvent( json[i] );
 					actualCount++;
 					break;
 				default:
@@ -79,7 +79,7 @@
 			
 		}
 	
-		return rStruct;
+		return rArray;
 	}
 	
 	private struct function handlePushEvent( required struct event ) {
