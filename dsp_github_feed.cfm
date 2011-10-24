@@ -16,13 +16,20 @@
 					</a>
 					<p class="updateMessage" >
 						<cfif isArray( myJSON[i].description ) >
+							<cfset commitCount = arrayLen( myJSON[i].description ) />
+
 							Multiple commits:
 							<ul class="commits" >
-								<cfloop array="#myJSON[i].description#" index="commit" >
+								<cfloop from="1" to="3" index="j" >
 									<li>
-										#commit#
+										#myJSON[i].description[j]#
 									</li>
 								</cfloop>
+								<cfif commitCount GT 3>
+									<li>
+										#commitCount - 3# more commits...
+									</li>
+								</cfif>
 							</ul>
 						<cfelse>
 						#myJSON[i].description#
