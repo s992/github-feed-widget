@@ -43,6 +43,7 @@
 		//Don't worry about this, I just went overboard with getters and setters
 		var json = getDirtyJSON();
 		var i = 1;
+		var checkCreate = '';
 		
 		//Because of potential missing events, I have to keep an "actual count" of
 		//items inserted into the struct so that my feed isn't shorter than I want
@@ -62,8 +63,12 @@
 					actualCount++;
 					break;
 				case "CreateEvent":
-					rArray[ actualCount ] = handleCreateEvent( json[i] );
-					actualCount++;
+					//If a repo is deleted, we end up with an empty struct..no good.
+					checkCreate = handleCreateEvent( json[i] );
+					if( not structIsEmpty( checkCreate ) ) {
+						rArray[ actualCount ] = handleCreateEvent( json[i] );
+						actualCount++;
+					}
 					break;
 				case "ForkEvent":
 					rArray[ actualCount ] = handleForkEvent( json[i] );
@@ -138,8 +143,16 @@
 		var rStruct = structNew();
 		var type = arguments.event.payload.ref_type;
 		var branch = '';
-		var repository = arguments.event.repository.owner & "/" & arguments.event.repository.name;
+		var repository = '';
 		var target = '';
+
+		//Return an empty struct if the repository has been deleted
+		if( not isDefined( 'arguments.event.repository' ) ) {
+			return rStruct;
+		}
+
+		repository = arguments.event.repository.owner & "/" & arguments.event.repository.name;
+		description = arguments.event.repository.description;
 		
 		//For some reason, CF9 will give me a null value for event.payload.ref, but Railo treats it
 		//as if it doesn't exist...hence this code
@@ -156,7 +169,7 @@
 		structInsert( rStruct, "actor", arguments.event.actor );
 		structInsert( rStruct, "action", "created" );
 		structInsert( rStruct, "target", target );
-		structInsert( rStruct, "description", arguments.event.repository.description );
+		structInsert( rStruct, "description", description );
 	
 		return rStruct;
 	}
